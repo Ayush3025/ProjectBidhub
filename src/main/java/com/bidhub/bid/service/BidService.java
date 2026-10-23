@@ -7,12 +7,16 @@ import com.bidhub.bid.entity.Bid;
 import com.bidhub.bid.repository.BidRepository;
 import com.bidhub.user.entity.User;
 import com.bidhub.user.repository.UserRepository;
+import com.bidhub.bid.event.BidPlacedEvent;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Service
 public class BidService {
@@ -20,14 +24,17 @@ public class BidService {
     private final AuctionRepository auctionRepository;
     private final BidRepository bidRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public BidService(
             AuctionRepository auctionRepository,
             BidRepository bidRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            ApplicationEventPublisher eventPublisher) {
         this.auctionRepository = auctionRepository;
         this.bidRepository = bidRepository;
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -122,7 +129,19 @@ public class BidService {
         // Both changes commit together or roll back together
         auctionRepository.save(auction);
 
-        return bidRepository.save(bid);
+        Bid savedBid = bidRepository.save(bid);
+
+        eventPublisher.publishEvent(
+                new BidPlacedEvent(
+                        savedBid.getAuction().getId(),
+                        savedBid.getId(),
+                        savedBid.getBidder().getId(),
+                        savedBid.getAmount(),
+                        auction.getCurrentPrice()
+                )
+        );
+
+        return savedBid;
     }
     
     @Transactional(readOnly = true)

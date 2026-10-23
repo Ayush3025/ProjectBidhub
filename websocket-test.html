@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BidHub WebSocket Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+</head>
+<body>
+    <h2>BidHub Live Bid Updates</h2>
+    <p id="status">Connecting...</p>
+    <ul id="bids"></ul>
+
+    <script>
+        const client = new StompJs.Client({
+            brokerURL: "ws://localhost:8080/ws",
+            reconnectDelay: 5000,
+
+            onConnect: () => {
+                document.getElementById("status").textContent =
+                    "Connected and subscribed to auction 1";
+
+                client.subscribe("/topic/auctions/1", message => {
+                    const bid = JSON.parse(message.body);
+                    const item = document.createElement("li");
+
+                    item.textContent =
+                        `Bid: ${bid.amount} | Current price: ${bid.currentPrice}`;
+
+                    document.getElementById("bids").prepend(item);
+                });
+            },
+
+            onStompError: frame => {
+                document.getElementById("status").textContent =
+                    "STOMP error: " + frame.headers.message;
+            },
+
+            onWebSocketError: () => {
+                document.getElementById("status").textContent =
+                    "WebSocket connection error";
+            }
+        });
+
+        client.activate();
+    </script>
+</body>
+</html>

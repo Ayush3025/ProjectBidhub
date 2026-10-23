@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class BidService {
@@ -53,7 +54,7 @@ public class BidService {
 
         // 4. Validate auction dates
         LocalDateTime now = LocalDateTime.now();
-
+        
         if (auction.getStartTime() == null
                 || auction.getEndTime() == null) {
             throw new IllegalArgumentException(
@@ -97,10 +98,15 @@ public class BidService {
             );
         }
 
-        if (amount <= currentPrice) {
+        double minimumIncrement = 100.0;
+        double minimumAllowedBid = currentPrice + minimumIncrement;
+
+        if (amount < minimumAllowedBid) {
             throw new IllegalArgumentException(
-                    "Your bid must be higher than the current price: "
-                            + currentPrice
+                    "Your bid must be at least "
+                            + minimumAllowedBid
+                            + ". Current price: " + currentPrice
+                            + ", minimum increment: " + minimumIncrement
             );
         }
 
@@ -117,5 +123,15 @@ public class BidService {
         auctionRepository.save(auction);
 
         return bidRepository.save(bid);
+    }
+    
+    @Transactional(readOnly = true)
+    public List<Bid> getBidHistory(Long auctionId) {
+
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Auction not found"));
+
+        return bidRepository.findByAuction_IdOrderByAmountDesc(auctionId);
     }
 }

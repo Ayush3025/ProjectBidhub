@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -81,6 +82,20 @@ public class BidController {
 
         public void setAmount(Double amount) {
             this.amount = amount;
+        }
+    }
+    
+    @GetMapping("/auction/{auctionId}")
+    public ResponseEntity<?> getBidHistory(
+            @PathVariable Long auctionId) {
+
+        try {
+            List<Bid> bids = bidService.getBidHistory(auctionId);
+            return ResponseEntity.ok(bids);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 }

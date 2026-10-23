@@ -22,7 +22,7 @@ public class Bid {
     @JoinColumn(name = "bidder_id")
     private User bidder;
 
-    @Column(name = "amount")
+    @Column(name = "bid_amount", nullable = false)
     private Double amount;
 
     @Column(name = "bid_time", insertable = false, updatable = false)

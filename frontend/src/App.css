@@ -1,0 +1,335 @@
+
+#root {
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  min-height: 100vh;
+  background: #0b1020;
+  color: #f4f6fc;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 7%;
+  border-bottom: 1px solid #252b3c;
+}
+
+.logo {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -1px;
+}
+
+.logo span,
+.hero h2 span {
+  color: #9a8cff;
+}
+
+.nav-links,
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.nav-links a {
+  color: #b6bdd0;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.nav-links a:hover {
+  color: white;
+}
+
+button,
+.primary-btn,
+.secondary-btn {
+  border-radius: 9px;
+  padding: 12px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.login-btn,
+.secondary-btn {
+  background: transparent;
+  border: 1px solid #414960;
+  color: #f4f6fc;
+}
+
+.sell-btn,
+.primary-btn {
+  background: #8c7cff;
+  border: 1px solid #8c7cff;
+  color: white;
+}
+
+.hero {
+  padding: 100px 20px 110px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at top, #24244c 0%, #0b1020 65%);
+}
+
+.eyebrow {
+  color: #a69aff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.hero h2 {
+  margin: 20px 0;
+  font-size: clamp(42px, 7vw, 76px);
+  letter-spacing: -3px;
+}
+
+.hero-description {
+  max-width: 540px;
+  margin: 0 auto;
+  color: #aeb6ca;
+  line-height: 1.8;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.auctions-section {
+  padding: 65px 7%;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.section-heading h2,
+.how-section h2 {
+  margin: 8px 0;
+  font-size: 30px;
+}
+
+.live-label {
+  color: #68e0a1;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.auction-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.auction-card {
+  overflow: hidden;
+  border: 1px solid #2a3145;
+  border-radius: 16px;
+  background: #131a2c;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.auction-card:hover {
+  transform: translateY(-5px);
+  border-color: #8c7cff;
+}
+
+.product-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 210px;
+  font-size: 76px;
+}
+
+.laptop-image {
+  background: linear-gradient(135deg, #202d4a, #35305b);
+}
+
+.watch-image {
+  background: linear-gradient(135deg, #34304d, #49364c);
+}
+
+.camera-image {
+  background: linear-gradient(135deg, #203e4b, #293250);
+}
+
+.status-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #184b3b;
+  color: #8df0ba;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.category {
+  color: #a69aff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.card-content h3 {
+  margin: 12px 0 20px;
+  font-size: 19px;
+}
+
+.current-label {
+  margin-bottom: 7px;
+  color: #9ba5bd;
+  font-size: 12px;
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.price-row strong {
+  font-size: 21px;
+}
+
+.price-row span {
+  color: #a69aff;
+  font-size: 12px;
+}
+
+.how-section {
+  padding: 70px 20px;
+  text-align: center;
+  background: #11172a;
+}
+
+.how-section > p:last-child {
+  color: #aeb6ca;
+}
+
+.footer {
+  padding: 25px;
+  border-top: 1px solid #252b3c;
+  color: #929bb1;
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 850px) {
+  .navbar {
+    flex-wrap: wrap;
+  }
+
+  .nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .auction-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .navbar {
+    padding: 18px 5%;
+  }
+
+  .nav-links {
+    gap: 14px;
+  }
+
+  .nav-actions {
+    gap: 8px;
+  }
+
+  .hero {
+    padding: 75px 18px;
+  }
+
+  .hero h2 {
+    letter-spacing: -1.5px;
+  }
+
+  .hero-actions {
+    flex-wrap: wrap;
+  }
+
+  .auctions-section {
+    padding: 45px 5%;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .auction-grid {
+    grid-template-columns: 1fr;
+  }
+  
+.auction-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fallback-icon {
+  font-size: 76px;
+}
+
+.auction-description {
+  color: #aeb6ca;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.error-message {
+  color: #ff8585;
+}
+  
+.view-auction-btn {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 11px 16px;
+  border-radius: 8px;
+  background: #7565f5;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.view-auction-btn:hover {
+  background: #6252df;
+}
+  
+}

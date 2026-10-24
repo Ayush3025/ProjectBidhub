@@ -1,6 +1,7 @@
 
 package com.bidhub.auction.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import com.bidhub.auction.entity.Auction;
 import com.bidhub.auction.repository.AuctionRepository;
 
@@ -8,8 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/auctions")
 public class AuctionController {
@@ -18,6 +21,11 @@ public class AuctionController {
 
     public AuctionController(AuctionRepository auctionRepository) {
         this.auctionRepository = auctionRepository;
+    }
+    
+    @GetMapping
+    public List<Auction> getAllAuctions() {
+        return auctionRepository.findAll();
     }
 
     @GetMapping("/{auctionId}")

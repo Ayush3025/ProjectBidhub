@@ -1,6 +1,7 @@
 
 package com.bidhub.bid.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import com.bidhub.bid.entity.Bid;
 import com.bidhub.bid.service.BidService;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/bids")
 public class BidController {

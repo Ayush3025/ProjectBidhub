@@ -1,0 +1,16 @@
+$kind: http-request
+name: create bid
+url: http://localhost:8080/api/bids
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"auctionId\": 1,\r
+
+    \  \"bidderId\": 2,\r
+
+    \  \"amount\" : 23900\r
+
+    }"
+order: 1725

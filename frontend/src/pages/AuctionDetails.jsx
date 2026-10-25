@@ -1,10 +1,11 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   getAuctionById,
   placeBid,
 } from '../services/auctionService';
+import { connectToAuction } from '../services/websocketService';
 import './AuctionDetails.css';
 
 function AuctionDetails() {
@@ -18,16 +19,76 @@ function AuctionDetails() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [liveConnected, setLiveConnected] = useState(false);
 
-  async function loadAuction() {
+  const loadAuction = useCallback(async () => {
     const data = await getAuctionById(id);
     setAuction(data);
-  }
+    return data;
+  }, [id]);
 
+  // Load auction details when the auction ID changes.
   useEffect(() => {
-    loadAuction()
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    let cancelled = false;
+
+    setLoading(true);
+    setError('');
+    setAuction(null);
+
+    getAuctionById(id)
+      .then((data) => {
+        if (!cancelled) {
+          setAuction(data);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err.message || 'Unable to load auction.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  // Subscribe to real-time updates for this auction.
+  useEffect(() => {
+    setLiveConnected(false);
+
+    const disconnect = connectToAuction(
+      id,
+      (bidUpdate) => {
+        setAuction((previousAuction) => {
+          if (!previousAuction) {
+            return previousAuction;
+          }
+
+          return {
+            ...previousAuction,
+            currentPrice: bidUpdate.currentPrice,
+          };
+        });
+
+        setMessage(
+          `New bid received: ₹${Number(
+            bidUpdate.currentPrice
+          ).toLocaleString('en-IN')}`
+        );
+
+        setError('');
+      },
+      setLiveConnected
+    );
+
+    return () => {
+      disconnect();
+    };
   }, [id]);
 
   async function handlePlaceBid(event) {
@@ -57,10 +118,19 @@ function AuctionDetails() {
 
     try {
       await placeBid(id, parsedBidderId, parsedAmount);
-      await loadAuction();
 
       setBidAmount('');
       setMessage('Bid placed successfully!');
+
+      // Refresh from the server to confirm the latest auction state.
+      try {
+        await loadAuction();
+      } catch (refreshError) {
+        console.error(
+          'Bid was placed, but refreshing auction details failed:',
+          refreshError
+        );
+      }
     } catch (err) {
       setError(err.message || 'Unable to place bid.');
     } finally {
@@ -126,6 +196,12 @@ function AuctionDetails() {
           <p>Auction ID: {auction.id}</p>
           <p>Start time: {auction.startTime || 'Not specified'}</p>
           <p>End time: {auction.endTime || 'Not specified'}</p>
+
+          <p className="live-status">
+            {liveConnected
+              ? '🟢 Live updates connected'
+              : '🟠 Connecting to live updates...'}
+          </p>
 
           <section className="bid-section">
             <h2>Place Your Bid</h2>

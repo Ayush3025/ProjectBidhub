@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -159,6 +158,12 @@ function AuctionDetails() {
   const isActive =
     String(auction.status).toUpperCase() === 'ACTIVE';
 
+  const isEnded =
+    String(auction.status).toUpperCase() === 'ENDED';
+
+  const isScheduled =
+    String(auction.status).toUpperCase() === 'SCHEDULED';
+
   return (
     <main className="auction-details-page">
       <button
@@ -189,68 +194,120 @@ function AuctionDetails() {
           </p>
 
           <div className="current-price">
-            <span>Current price</span>
-            <h2>₹{currentPrice.toLocaleString('en-IN')}</h2>
+            <span>{isEnded ? 'Final price' : 'Current price'}</span>
+            <h2>
+              ₹
+              {Number(
+                isEnded
+                  ? auction.winningAmount ?? currentPrice
+                  : currentPrice
+              ).toLocaleString('en-IN')}
+            </h2>
           </div>
 
           <p>Auction ID: {auction.id}</p>
-          <p>Start time: {auction.startTime || 'Not specified'}</p>
-          <p>End time: {auction.endTime || 'Not specified'}</p>
-
-          <p className="live-status">
-            {liveConnected
-              ? '🟢 Live updates connected'
-              : '🟠 Connecting to live updates...'}
+          <p>
+            Start time: {auction.startTime || 'Not specified'}
+          </p>
+          <p>
+            End time: {auction.endTime || 'Not specified'}
           </p>
 
-          <section className="bid-section">
-            <h2>Place Your Bid</h2>
+          {!isEnded && (
+            <p className="live-status">
+              {liveConnected
+                ? '🟢 Live updates connected'
+                : '🟠 Connecting to live updates...'}
+            </p>
+          )}
 
-            {!isActive && (
-              <p>This auction is not currently active.</p>
-            )}
+          {isEnded ? (
+            <section className="bid-section winner-info">
+              <h2>🏆 Auction Results</h2>
 
-            <form onSubmit={handlePlaceBid}>
-              <label htmlFor="bidderId">Bidder ID</label>
-              <input
-                id="bidderId"
-                type="number"
-                min="1"
-                value={bidderId}
-                onChange={(event) => setBidderId(event.target.value)}
-                placeholder="Enter your existing user ID"
-                required
-              />
+              {auction.winnerId != null &&
+              auction.winnerName ? (
+                <>
+                  <p>
+                    <strong>Winner:</strong>{' '}
+                    {auction.winnerName}
+                  </p>
 
-              <label htmlFor="bidAmount">Your bid (₹)</label>
-              <input
-                id="bidAmount"
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={bidAmount}
-                onChange={(event) => setBidAmount(event.target.value)}
-                placeholder="Enter your bid amount"
-                required
-              />
+                  <p>
+                    <strong>Winner ID:</strong>{' '}
+                    {auction.winnerId}
+                  </p>
 
-              <button
-                className="place-bid-btn"
-                type="submit"
-                disabled={!isActive || submitting}
-              >
-                {submitting ? 'Submitting...' : 'Place Bid'}
-              </button>
-            </form>
+                  <p>
+                    <strong>Winning amount:</strong>{' '}
+                    ₹
+                    {Number(
+                      auction.winningAmount ?? currentPrice
+                    ).toLocaleString('en-IN')}
+                  </p>
+                </>
+              ) : (
+                <p>No winning bids were placed in this auction.</p>
+              )}
+            </section>
+          ) : (
+            <section className="bid-section">
+              <h2>Place Your Bid</h2>
 
-            {message && (
-              <p className="bid-success">{message}</p>
-            )}
+              {!isActive && (
+                <p>
+                  {isScheduled
+                    ? 'This auction has not started yet.'
+                    : 'This auction is not currently active.'}
+                </p>
+              )}
 
-            {error && (
-              <p className="error-message">{error}</p>
-            )}
-          </section>
+              <form onSubmit={handlePlaceBid}>
+                <label htmlFor="bidderId">Bidder ID</label>
+                <input
+                  id="bidderId"
+                  type="number"
+                  min="1"
+                  value={bidderId}
+                  onChange={(event) =>
+                    setBidderId(event.target.value)
+                  }
+                  placeholder="Enter your existing user ID"
+                  required
+                />
+
+                <label htmlFor="bidAmount">Your bid (₹)</label>
+                <input
+                  id="bidAmount"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={bidAmount}
+                  onChange={(event) =>
+                    setBidAmount(event.target.value)
+                  }
+                  placeholder="Enter your bid amount"
+                  required
+                />
+
+                <button
+                  className="place-bid-btn"
+                  type="submit"
+                  disabled={!isActive || submitting}
+                >
+                  {submitting ? 'Submitting...' : 'Place Bid'}
+                </button>
+              </form>
+
+              {message && (
+                <p className="bid-success">{message}</p>
+              )}
+
+              {error && (
+                <p className="error-message">{error}</p>
+              )}
+            </section>
+          )}
         </div>
       </section>
     </main>

@@ -24,8 +24,37 @@ public class AuctionController {
     }
     
     @GetMapping
-    public List<Auction> getAllAuctions() {
-        return auctionRepository.findAll();
+    public List<Map<String, Object>> getAllAuctions() {
+        return auctionRepository.findAll().stream().map(auction -> {
+            Map<String, Object> response = new LinkedHashMap<>();
+
+            response.put("id", auction.getId());
+            response.put("title", auction.getTitle());
+            response.put("description", auction.getDescription());
+            response.put("basePrice", auction.getBasePrice());
+            response.put("currentPrice", auction.getCurrentPrice());
+            response.put("status", auction.getStatus());
+            response.put("startTime", auction.getStartTime());
+            response.put("endTime", auction.getEndTime());
+            response.put("imageUrl", auction.getImageUrl());
+
+            if (auction.getSeller() != null) {
+                response.put("sellerId", auction.getSeller().getId());
+                response.put("sellerName", auction.getSeller().getName());
+            }
+
+            if (auction.getWinner() != null) {
+                response.put("winnerId", auction.getWinner().getId());
+                response.put("winnerName", auction.getWinner().getName());
+                response.put("winningAmount", auction.getCurrentPrice());
+            } else {
+                response.put("winnerId", null);
+                response.put("winnerName", null);
+                response.put("winningAmount", null);
+            }
+
+            return response;
+        }).toList();
     }
 
     @GetMapping("/{auctionId}")

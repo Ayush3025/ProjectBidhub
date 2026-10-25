@@ -1,4 +1,3 @@
-
 import './App.css';
 import { useEffect, useState } from 'react';
 import {
@@ -99,61 +98,107 @@ function HomePage() {
 
             {!loading &&
               !error &&
-              auctions.map((auction) => (
-                <article className="auction-card" key={auction.id}>
-                  <div className="product-image">
-                    {auction.imageUrl ? (
-                      <img
-                        src={auction.imageUrl}
-                        alt={auction.title || 'Auction item'}
-                        className="auction-image"
-                      />
-                    ) : (
-                      <span className="fallback-icon">📦</span>
-                    )}
+              auctions.map((auction) => {
+                const isEnded =
+                  String(auction.status).toUpperCase() === 'ENDED';
 
-                    {String(auction.status).toUpperCase() ===
-                      'ACTIVE' && (
-                      <span className="status-tag">LIVE</span>
-                    )}
-                  </div>
+                const isActive =
+                  String(auction.status).toUpperCase() === 'ACTIVE';
 
-                  <div className="card-content">
-                    <p className="category">
-                      {auction.status || 'AUCTION'}
-                    </p>
+                const displayedPrice =
+                  auction.winningAmount ??
+                  auction.currentPrice ??
+                  auction.basePrice ??
+                  0;
 
-                    <h3>{auction.title || 'Untitled Auction'}</h3>
+                return (
+                  <article className="auction-card" key={auction.id}>
+                    <div className="product-image">
+                      {auction.imageUrl ? (
+                        <img
+                          src={auction.imageUrl}
+                          alt={auction.title || 'Auction item'}
+                          className="auction-image"
+                        />
+                      ) : (
+                        <span className="fallback-icon">📦</span>
+                      )}
 
-                    <p className="current-label">Current bid</p>
-
-                    <div className="price-row">
-                      <strong>
-                        ₹
-                        {Number(
-                          auction.currentPrice ??
-                            auction.basePrice ??
-                            0
-                        ).toLocaleString('en-IN')}
-                      </strong>
-
-                      <span>#{auction.id}</span>
+                      {isActive && (
+                        <span className="status-tag">LIVE</span>
+                      )}
                     </div>
 
-                    <p className="auction-description">
-                      {auction.description ||
-                        'No description available.'}
-                    </p>
+                    <div className="card-content">
+                      <p className="category">
+                        {auction.status || 'AUCTION'}
+                      </p>
 
-                    <Link
-                      to={`/auction/${auction.id}`}
-                      className="view-auction-btn"
-                    >
-                      View Auction →
-                    </Link>
-                  </div>
-                </article>
-              ))}
+                      <h3>{auction.title || 'Untitled Auction'}</h3>
+
+                      <p className="current-label">
+                        {isEnded ? 'Final price' : 'Current bid'}
+                      </p>
+
+                      <div className="price-row">
+                        <strong>
+                          ₹
+                          {Number(displayedPrice).toLocaleString('en-IN')}
+                        </strong>
+
+                        <span>#{auction.id}</span>
+                      </div>
+
+                      <p className="auction-description">
+                        {auction.description ||
+                          'No description available.'}
+                      </p>
+
+                      {isEnded && (
+                        <div className="winner-info">
+                          <p className="winner-heading">
+                            🏆 Auction Results
+                          </p>
+
+                          {auction.winnerId != null &&
+                          auction.winnerName ? (
+                            <>
+                              <p>
+                                <strong>Winner:</strong>{' '}
+                                {auction.winnerName}
+                              </p>
+
+                              <p>
+                                <strong>Winner ID:</strong>{' '}
+                                {auction.winnerId}
+                              </p>
+
+                              <p>
+                                <strong>Winning amount:</strong>{' '}
+                                ₹
+                                {Number(
+                                  auction.winningAmount ??
+                                    auction.currentPrice ??
+                                    0
+                                ).toLocaleString('en-IN')}
+                              </p>
+                            </>
+                          ) : (
+                            <p>No winning bids were placed.</p>
+                          )}
+                        </div>
+                      )}
+
+                      <Link
+                        to={`/auction/${auction.id}`}
+                        className="view-auction-btn"
+                      >
+                        {isEnded ? 'View Results →' : 'View Auction →'}
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
           </div>
         </section>
 

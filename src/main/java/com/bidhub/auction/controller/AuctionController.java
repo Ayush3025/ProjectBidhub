@@ -59,6 +59,16 @@ public class AuctionController {
                         response.put("sellerName",
                                 auction.getSeller().getName());
                     }
+                    
+                    if (auction.getWinner() != null) {
+                        response.put("winnerId", auction.getWinner().getId());
+                        response.put("winnerName", auction.getWinner().getName());
+                        response.put("winningAmount", auction.getCurrentPrice());
+                    } else {
+                        response.put("winnerId", null);
+                        response.put("winnerName", null);
+                        response.put("winningAmount", null);
+                    }
 
                     return ResponseEntity.ok(response);
                 })

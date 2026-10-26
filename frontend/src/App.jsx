@@ -104,6 +104,8 @@ function HomePage() {
 
                 const isActive =
                   String(auction.status).toUpperCase() === 'ACTIVE';
+				
+
 
                 const displayedPrice =
                   auction.winningAmount ??
